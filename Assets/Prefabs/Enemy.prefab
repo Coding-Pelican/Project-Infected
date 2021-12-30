@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8801450447361924561}
   m_Layer: 9
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -141,12 +141,13 @@ MonoBehaviour:
   armor: 100
   moveSpeed: 5.2
   damage: 20
-  player: {fileID: 0}
   attackPoint: {fileID: 0}
   attackRange: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
+  isAttacking: 0
+  isFollowing: 0
 --- !u!114 &8801450447361924561
 MonoBehaviour:
   m_ObjectHideFlags: 0

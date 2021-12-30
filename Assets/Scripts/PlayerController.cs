@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
     [Range(1, 200)]
-    public float health = 100f;
+    public float maxHealth = 100f;
+    private float curHealth;
     [Range(0, 100)]
     public float armor = 100f;
     public float thirsty;
@@ -19,22 +20,29 @@ public class PlayerController : MonoBehaviour {
     public float walkingSpeed = 3.7f;
     PlayerShot playerShot;
     SpriteRenderer spriteRenderer;
+    public Sprite defaultSprite;
     public Sprite deadSprite;
     public bool isDied = false;
+    [Range(0, 30)]
+    public float respawnTime = 5f;
+    public GameObject spawnPoint;
+    Transform spawn;
 
     Rigidbody2D rb;
 
     Vector2 movement;
 
     void Start() {
+        curHealth = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         playerShot = gameObject.GetComponent<PlayerShot>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        spawn = spawnPoint.transform;
     }
 
     void Update() {
         if (isDied) return;
-        if (health <= 0) Die();
+        if (curHealth <= 0) Die();
         Movement();
     }
 
@@ -91,10 +99,21 @@ public class PlayerController : MonoBehaviour {
         isDied = true;
         GameManager.instance.isPlayerDied = true;
         spriteRenderer.sprite = deadSprite;
+        Invoke("Respawn", respawnTime);
+        Debug.Log("Player is Dead");
     }
 
     public void TakeDamage(float damageAmount) {
-        health -= damageAmount;
-        Debug.Log("Health : " + health);
+        curHealth -= damageAmount;
+        Debug.Log("Health : " + curHealth);
+    }
+
+    public void Respawn() {
+        transform.position = new Vector3(spawn.position.x, spawn.position.y, transform.position.z);
+        curHealth = maxHealth;
+        isDied = false;
+        GameManager.instance.isPlayerDied = false;
+        spriteRenderer.sprite = defaultSprite;
+        gameObject.GetComponent<PlayerShot>().Start();
     }
 }

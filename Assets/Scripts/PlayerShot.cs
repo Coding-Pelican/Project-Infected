@@ -9,11 +9,12 @@ public class PlayerShot : MonoBehaviour {
     public float fireRate; //발사속도
     private float curShotDelay = 0f; //발사후시간
     public int maxMag; //최대 탄약수
-    private int curMag; //현재 탄약수
+    [HideInInspector]
+    public int curMag; //현재 탄약수
     [Range(0, 5)]
     public float reloadTime;
     public bool isReloading = false;
-    public bool isBroken = false;
+    public bool isBroken;
     [Range(0, 100)]
     public int breakingProbability;
     [Range(0, 100)]
@@ -23,8 +24,9 @@ public class PlayerShot : MonoBehaviour {
     [Range(0, 50)]
     public float glidingTime = 10f;
 
-    private void Start() {
+    public void Start() {
         curMag = maxMag;
+        isBroken = false;
     }
     void Update() {
         if (gameObject.GetComponent<PlayerController>().isDied) return;
@@ -58,7 +60,7 @@ public class PlayerShot : MonoBehaviour {
         }
     }
 
-    IEnumerator Reload() {
+    public IEnumerator Reload() {
         isReloading = true;
         Debug.Log("Reloading...");
         yield return new WaitForSeconds(isBroken ? reloadTime : reloadTime * 3);

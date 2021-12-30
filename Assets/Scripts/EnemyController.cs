@@ -49,11 +49,13 @@ public class EnemyController : MonoBehaviour {
     }
 
     public void Die() {
+        GameManager.instance.curEnemy--;
         Destroy(gameObject);
     }
 
     public void TakeDamage(float damageAmount) {
         health -= damageAmount;
+        Debug.Log("Enemy health : " + health);
     }
 
     public void Following(float _distance) {
