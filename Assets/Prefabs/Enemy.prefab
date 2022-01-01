@@ -139,16 +139,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   armor: 100
-  moveSpeed: 5.2
+  movementSpeed: 5.2
   damage: 20
+  detectionDistance: 15
   attackDelay: 1
-  attackPoint: {fileID: 0}
-  attackRange: 0
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  isAttacking: 0
+  deltaTimeToTarget: 0
+  isReadyToAttack: 0
   isFollowing: 0
+  isWandering: 0
+  isIdle: 0
 --- !u!114 &8801450447361924561
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,69 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
-    public float health = 100f;
-    public float armor = 100f;
-    public float moveSpeed = 5.2f;
-    public int damage = 20;
-    private float distance;
-    [Range(0, 5)]
-    public float attackDelay;
+    [HideInInspector]
+    public static readonly WaitForSeconds detectWaitForSecond1s = new WaitForSeconds(1f);
 
     private GameObject player;
     private Rigidbody2D rb;
-    public Transform attackPoint;
-    public float attackRange;
-    public LayerMask enemyLayer;
-    public bool isAttacking = false;
-    public bool isFollowing = false;
 
-    void Start() {
+    public float health = 100f;
+    public float armor = 100f;
+    public float movementSpeed = 5.2f;
+    public int damage = 20;
+    public float detectionDistance;
+    private float distanceBetweenPlayer;
+    [Range(0, 5)]
+    public float attackDelay;
+    private float targetAngle = 0;
+    public float deltaTimeToTarget = 0;
+    private float wanderTime = 0;
+
+    public bool isReadyToAttack = false;
+    public bool isFollowing = false;
+    public bool isWandering = false;
+    public bool isIdle = false;
+
+    IEnumerator detectPlayerByDistanceCoroutine;
+    IEnumerator checkAttackCoroutine;
+
+    private void Awake() {
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody2D>();
-        moveSpeed = Random.Range(moveSpeed / 2, moveSpeed * 1.25f);
-        StartCoroutine(Detect(1f));
-        StartCoroutine("AttackCheck");
+        movementSpeed = Random.Range(movementSpeed / 2, movementSpeed * 1.25f);
     }
 
-    void Update() {
-        if (health <= 0) {
-            Die();
-        }
+    private void Start() {
+        detectPlayerByDistanceCoroutine = DetectPlayerByDistance(detectionDistance);
+        checkAttackCoroutine = CheckAttack();
+        StartCoroutine(detectPlayerByDistanceCoroutine);
+        StartCoroutine(checkAttackCoroutine);
     }
 
-    void FixedUpdate() {
+    private void Update() {
         if (GameManager.instance.isPlayerDied) {
             return;
         }
-        //isPlayerDeid 추가하기
-        Following(distance);
+        if (health <= 0) {
+            Die();
+        }
+        if (isFollowing) {
+            FollowPlayer();
+        } else if (isWandering){
+            Wander();
+        } else {
+            if (!isIdle) {
+                StartCoroutine(Idle());
+            }
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision) {
         if (collision.transform.tag.Equals("Player")) {
-            if (GameManager.instance.isPlayerDied || !isAttacking) {
+            if (GameManager.instance.isPlayerDied || !isReadyToAttack) {
                 return;
             }
             Debug.Log("Deals damage to Player");
             int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
             collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage + randomDamage);
-            isAttacking = false;
+            isReadyToAttack = false;
             //Debug.Log("Entered");
         }
     }
-    IEnumerator AttackCheck() {
-        if (!isAttacking) {
-            isAttacking = true;
-            Debug.Log("AttackCheck");
-        }
-        yield return new WaitForSeconds(attackDelay);
-        StartCoroutine("AttackCheck");
-
-    }
-    //private void OnCollisionExit2D(Collision2D collision)
-    //{
-    //    if (isAttacking) isAttacking = false;
-    //}
 
     public void Die() {
         GameManager.instance.curEnemy--;
@@ -77,42 +83,68 @@ public class EnemyController : MonoBehaviour {
         Debug.Log("Enemy health : " + health);
     }
 
-    public void Following(float _distance) {
-        if (_distance < 20f) {
-            isFollowing = true;
-            Vector3 lookDir = player.transform.position - transform.position;
-            float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
-            rb.rotation = angle;
-            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, moveSpeed * Time.deltaTime);
+    public void FollowPlayer() {
+        isWandering = false;
+        Vector3 lookDir = player.transform.position - transform.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+        rb.rotation = angle;
+        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, movementSpeed * Time.deltaTime);
+    }
+
+    IEnumerator Idle() {
+        isIdle = true;
+        Debug.Log("Enemy State is idle");
+        float time = Random.Range(1f, 5f);
+        yield return new WaitForSeconds(time);
+        if (isFollowing) {
+            isIdle = false;
+            yield break;
+        } else {
+            SetWandering();
+        }
+        isIdle = false;
+    }
+
+    void SetWandering() {
+        Debug.Log("Enemy State is Setting Wandering");
+        isWandering = true;
+        targetAngle = Random.Range(0, 360);
+        deltaTimeToTarget = Random.Range(1f, 3f);
+        wanderTime = deltaTimeToTarget;
+    }
+
+    void Wander() {
+        if (isFollowing) {
+            isWandering = false;
+            return;
+        }
+        Debug.Log("Enemy State is Wandering");
+        transform.eulerAngles = new Vector3(0, 0, targetAngle);
+        transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
+        wanderTime -= Time.deltaTime;
+        if (wanderTime <= 0) {
+            isWandering = false;
+            return;
         }
     }
 
-    IEnumerator Detect(float time) {
+    IEnumerator CheckAttack() {
+        if (!isReadyToAttack) {
+            isReadyToAttack = true;
+        }
+        yield return new WaitForSeconds(attackDelay);
+        StartCoroutine(checkAttackCoroutine);
+    }
+
+    IEnumerator DetectPlayerByDistance(float _detectionDistance) {
         while (true) {
-            distance = Vector2.Distance(transform.position, player.transform.position);
-            yield return new WaitForSeconds(time);
+            yield return detectWaitForSecond1s;
+            distanceBetweenPlayer = Vector2.Distance(transform.position, player.transform.position);
+            if (distanceBetweenPlayer < _detectionDistance) {
+                isFollowing = true;
+                Debug.Log("Detected Player!");
+            }
             //Debug.Log("Distance = " + distance);
-        }
-    }
-
-    //IEnumerator Attack(Collision2D _collision) {
-    //    while (isAttacking) {
-    //        int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
-    //        Debug.Log("Deals damage to Player");
-    //        _collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
-    //        yield return new WaitForSeconds(1);
-    //    }
-    //}
-
-    IEnumerator Wander() {
-        //랜덤 대기 상태 구현하기
-        while (!isFollowing) {
-            Vector3 targetPos;
-            targetPos.x = Random.Range(-5, 5);
-            targetPos.y = Random.Range(-5, 5);
-            transform.position = Vector2.MoveTowards(transform.position, new Vector3(transform.position.x + targetPos.x, transform.position.y + targetPos.y, transform.position.z), moveSpeed * Time.deltaTime);
-            if (isFollowing) break;
-            yield return new WaitForSeconds(1);
         }
     }
 }

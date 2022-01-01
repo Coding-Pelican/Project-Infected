@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     [Range(1, 200)]
     public float maxHealth = 100f;
-    private float curHealth;
+    public float curHealth;
     [Range(0, 100)]
     public float armor = 100f;
     public float thirsty;
