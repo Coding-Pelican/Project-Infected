@@ -3,32 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletController : MonoBehaviour {
-    //[Range(0, 100)]
-    //public int damage = 40; // 20~60
-    //[Range(0, 100)]
-    //public float bspeed = 50f;
-    //[Range(0, 50)]
-    //public float glidingTime = 10f;
-
-    PlayerShot playerShot;
     [SerializeField] int damage;
     [SerializeField] float glidingTime;
     [SerializeField] float bspeed;
 
-    Vector3 startPos;
-    Vector3 currentPos;
+    private PlayerShot playerShot;
 
-    private void Start() {
-        startPos = transform.position;
+    IEnumerator destroySelfAfterSecondsCoroutine;
+    private void Awake() {
         playerShot = GameObject.Find("Player").GetComponent<PlayerShot>();
         damage = playerShot.damage;
         glidingTime = playerShot.glidingTime;
+    }
 
-        StartCoroutine(DestroySelfAfterSeconds(glidingTime));
+    private void Start() {
+        destroySelfAfterSecondsCoroutine = DestroySelfAfterSeconds(glidingTime);
+        StartCoroutine(destroySelfAfterSecondsCoroutine);
     }
-    void Update() {
-        currentPos = transform.position;
-    }
+
     void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.tag.Equals("Bullet")) {
             return;

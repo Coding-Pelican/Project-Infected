@@ -5,11 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     [Range(1, 200)]
     public float maxHealth = 100f;
-    public float curHealth;
+    public float currentHealth;
     [Range(0, 100)]
-    public float armor = 100f;
-    public float thirsty;
-    public float hungry;
+    //public float armor = 100f;
+    //public float thirsty;
+    //public float hungry;
     [HideInInspector]
     public float speed;
     [Range(0, 10)]
@@ -18,46 +18,52 @@ public class PlayerController : MonoBehaviour {
     public float crouchSpeed = 2.3f;
     [Range(0, 10)]
     public float walkingSpeed = 3.7f;
-    PlayerShot playerShot;
-    SpriteRenderer spriteRenderer;
-    public Sprite defaultSprite;
-    public Sprite deadSprite;
-    public bool isDied = false;
+
     [Range(0, 30)]
     public float respawnTime = 5f;
-    public GameObject spawnPoint;
-    Transform spawn;
+    public bool isDied = false;
 
-    Rigidbody2D rb;
+    public Sprite defaultSprite;
+    public Sprite deadSprite;
+
+    public GameObject spawnPoint;
+    private Transform spawn;
+    private PlayerShot playerShot;
+    private SpriteRenderer spriteRenderer;
+
+    private Rigidbody2D rb;
 
     Vector2 movement;
 
-    void Start() {
-        curHealth = maxHealth;
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
-        playerShot = gameObject.GetComponent<PlayerShot>();
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        playerShot = GetComponent<PlayerShot>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+    private void Start() {
+        currentHealth = maxHealth;
         spawn = spawnPoint.transform;
     }
 
-    void Update() {
+    private void Update() {
         if (isDied) {
             return;
         }
-        if (curHealth <= 0) {
+        if (currentHealth <= 0) {
             Die();
         }
-        Movement();
+        Move();
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
         if (isDied) {
             return;
         }
         LookingAtTheMouse();
         rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
-    void LookingAtTheMouse() {
+
+    private void LookingAtTheMouse() {
         Vector3 mPosition = Input.mousePosition; //마우스 좌표 저장
         Vector3 oPosition = transform.position; //오브젝트 좌표 저장
 
@@ -81,7 +87,7 @@ public class PlayerController : MonoBehaviour {
         transform.rotation = Quaternion.Euler(0f, 0f, rotateDegree);
     }
 
-    void Movement() {
+    private void Move() {
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
         if (!playerShot.isReloading) {
@@ -110,16 +116,16 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void TakeDamage(float damageAmount) {
-        curHealth -= damageAmount;
-        Debug.Log("Health : " + curHealth);
+        currentHealth -= damageAmount;
+        Debug.Log("Health : " + currentHealth);
     }
 
     public void Respawn() {
-        transform.position = new Vector3(spawn.position.x, spawn.position.y, transform.position.z);
-        curHealth = maxHealth;
+        transform.position = spawn.position;
+        currentHealth = maxHealth;
         isDied = false;
         GameManager.instance.isPlayerDied = false;
         spriteRenderer.sprite = defaultSprite;
-        gameObject.GetComponent<PlayerShot>().Start();
+        GetComponent<PlayerShot>().Start();
     }
 }

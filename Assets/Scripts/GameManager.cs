@@ -5,11 +5,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
     public bool isPlayerDied;
-    public int curEnemy;
+    public int currentEnemy;
 
     private void Awake() {
         instance = this;
         isPlayerDied = false;
-        curEnemy = 0;
+        currentEnemy = 0;
     }
 }

@@ -10,7 +10,7 @@ public class EnemyController : MonoBehaviour {
     private Rigidbody2D rb;
 
     public float health = 100f;
-    public float armor = 100f;
+    //public float armor = 100f;
     public float movementSpeed = 5.2f;
     public int damage = 20;
     public float detectionDistance;
@@ -74,7 +74,7 @@ public class EnemyController : MonoBehaviour {
     }
 
     public void Die() {
-        GameManager.instance.curEnemy--;
+        GameManager.instance.currentEnemy--;
         Destroy(gameObject);
     }
 
@@ -91,7 +91,7 @@ public class EnemyController : MonoBehaviour {
         transform.position = Vector2.MoveTowards(transform.position, player.transform.position, movementSpeed * Time.deltaTime);
     }
 
-    IEnumerator Idle() {
+    private IEnumerator Idle() {
         isIdle = true;
         Debug.Log("Enemy State is idle");
         float time = Random.Range(1f, 5f);
@@ -105,7 +105,7 @@ public class EnemyController : MonoBehaviour {
         isIdle = false;
     }
 
-    void SetWandering() {
+    private void SetWandering() {
         Debug.Log("Enemy State is Setting Wandering");
         isWandering = true;
         targetAngle = Random.Range(0, 360);
@@ -113,7 +113,7 @@ public class EnemyController : MonoBehaviour {
         wanderTime = deltaTimeToTarget;
     }
 
-    void Wander() {
+    private void Wander() {
         if (isFollowing) {
             isWandering = false;
             return;
@@ -128,7 +128,7 @@ public class EnemyController : MonoBehaviour {
         }
     }
 
-    IEnumerator CheckAttack() {
+    private IEnumerator CheckAttack() {
         if (!isReadyToAttack) {
             isReadyToAttack = true;
         }
@@ -136,7 +136,7 @@ public class EnemyController : MonoBehaviour {
         StartCoroutine(checkAttackCoroutine);
     }
 
-    IEnumerator DetectPlayerByDistance(float _detectionDistance) {
+    private IEnumerator DetectPlayerByDistance(float _detectionDistance) {
         while (true) {
             yield return detectWaitForSecond1s;
             distanceBetweenPlayer = Vector2.Distance(transform.position, player.transform.position);

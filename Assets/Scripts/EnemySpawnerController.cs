@@ -6,35 +6,38 @@ public class EnemySpawnerController : MonoBehaviour {
 
     public GameObject Enemy;
     [Range(0, 100)]
-    public float startSpawnRadius = 25f;
+    public float startingSpawnRadius = 25f;
     [Range(0, 500)]
     public int maxEnemy;
     [Range(0, 5)]
-    public float time = 0.5f;
+    public float spawnDelayTime = 0.5f;
 
-    Vector2 curPos;
+    Vector2 currentPosition;
+
+    IEnumerator spawnCoroutine;
 
     void Start() {
-        StartCoroutine(Spawn());
+        spawnCoroutine = Spawn();
+        StartCoroutine(spawnCoroutine);
     }
 
     private void Update() {
-        curPos.x = gameObject.transform.position.x;
-        curPos.y = gameObject.transform.position.y;
+        currentPosition.x = gameObject.transform.position.x;
+        currentPosition.y = gameObject.transform.position.y;
     }
 
     void SpawnEnemy() {
-        if (GameManager.instance.curEnemy >= maxEnemy) {
+        if (GameManager.instance.currentEnemy >= maxEnemy) {
             return;
         }
-        GameManager.instance.curEnemy++;
-        Vector2 spawnPos = Random.insideUnitCircle.normalized * startSpawnRadius + curPos;
-        Instantiate(Enemy, spawnPos, Quaternion.identity);
+        GameManager.instance.currentEnemy++;
+        Vector2 spawnPosition = Random.insideUnitCircle.normalized * startingSpawnRadius + currentPosition;
+        Instantiate(Enemy, spawnPosition, Quaternion.identity);
     }
 
     IEnumerator Spawn() {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(spawnDelayTime);
         SpawnEnemy();
-        StartCoroutine(Spawn());
+        StartCoroutine(spawnCoroutine);
     }
 }
