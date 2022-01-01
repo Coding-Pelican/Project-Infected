@@ -24,15 +24,17 @@ public class EnemySpawnerController : MonoBehaviour {
     }
 
     void SpawnEnemy() {
+        if (GameManager.instance.curEnemy >= maxEnemy) {
+            return;
+        }
         GameManager.instance.curEnemy++;
         Vector2 spawnPos = Random.insideUnitCircle.normalized * startSpawnRadius + curPos;
         Instantiate(Enemy, spawnPos, Quaternion.identity);
     }
 
     IEnumerator Spawn() {
-        while (GameManager.instance.curEnemy < maxEnemy) {
-            yield return new WaitForSeconds(time);
-            SpawnEnemy();
-        }
+        yield return new WaitForSeconds(time);
+        SpawnEnemy();
+        StartCoroutine(Spawn());
     }
 }

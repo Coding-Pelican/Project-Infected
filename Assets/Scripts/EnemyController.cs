@@ -8,6 +8,8 @@ public class EnemyController : MonoBehaviour {
     public float moveSpeed = 5.2f;
     public int damage = 20;
     private float distance;
+    [Range(0, 5)]
+    public float attackDelay;
 
     private GameObject player;
     private Rigidbody2D rb;
@@ -22,6 +24,7 @@ public class EnemyController : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         moveSpeed = Random.Range(moveSpeed / 2, moveSpeed * 1.25f);
         StartCoroutine(Detect(1f));
+        StartCoroutine("AttackCheck");
     }
 
     void Update() {
@@ -31,22 +34,38 @@ public class EnemyController : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (GameManager.instance.isPlayerDied) return;
+        if (GameManager.instance.isPlayerDied) {
+            return;
+        }
         //isPlayerDeid 추가하기
         Following(distance);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision) {
+    private void OnCollisionStay2D(Collision2D collision) {
         if (collision.transform.tag.Equals("Player")) {
-            if (GameManager.instance.isPlayerDied) return;
-            isAttacking = true;
-            StartCoroutine(Attack(collision));
+            if (GameManager.instance.isPlayerDied || !isAttacking) {
+                return;
+            }
+            Debug.Log("Deals damage to Player");
+            int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
+            collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage + randomDamage);
+            isAttacking = false;
             //Debug.Log("Entered");
         }
     }
-    private void OnCollisionExit2D(Collision2D collision) {
-        if (isAttacking) isAttacking = false;
+    IEnumerator AttackCheck() {
+        if (!isAttacking) {
+            isAttacking = true;
+            Debug.Log("AttackCheck");
+        }
+        yield return new WaitForSeconds(attackDelay);
+        StartCoroutine("AttackCheck");
+
     }
+    //private void OnCollisionExit2D(Collision2D collision)
+    //{
+    //    if (isAttacking) isAttacking = false;
+    //}
 
     public void Die() {
         GameManager.instance.curEnemy--;
@@ -76,14 +95,14 @@ public class EnemyController : MonoBehaviour {
         }
     }
 
-    IEnumerator Attack(Collision2D _collision) {
-        while (isAttacking) {
-            int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
-            Debug.Log("Deals damage to Player");
-            _collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage + randomDamage);
-            yield return new WaitForSeconds(1);
-        }
-    }
+    //IEnumerator Attack(Collision2D _collision) {
+    //    while (isAttacking) {
+    //        int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
+    //        Debug.Log("Deals damage to Player");
+    //        _collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
+    //        yield return new WaitForSeconds(1);
+    //    }
+    //}
 
     IEnumerator Wander() {
         //랜덤 대기 상태 구현하기

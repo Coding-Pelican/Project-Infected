@@ -140,7 +140,8 @@ MonoBehaviour:
   health: 100
   armor: 100
   moveSpeed: 5.2
-  damage: 20
+  damage: 1
+  attackDelay: 1
   attackPoint: {fileID: 0}
   attackRange: 0
   enemyLayer:

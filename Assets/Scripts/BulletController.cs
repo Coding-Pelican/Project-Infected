@@ -30,7 +30,9 @@ public class BulletController : MonoBehaviour {
         currentPos = transform.position;
     }
     void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.transform.tag.Equals("Bullet")) return;
+        if (collision.transform.tag.Equals("Bullet")) {
+            return;
+        }
 
         int randomDamage = Random.Range(-damage / 2, damage / 2 + 1);
         if (collision.gameObject.tag == "border") {

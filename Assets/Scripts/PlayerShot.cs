@@ -29,14 +29,21 @@ public class PlayerShot : MonoBehaviour {
         isBroken = false;
     }
     void Update() {
-        if (gameObject.GetComponent<PlayerController>().isDied) return;
-        if (isReloading) return;
+        if (gameObject.GetComponent<PlayerController>().isDied) {
+            return;
+        }
+        if (isReloading) {
+            return;
+        }
         if (Input.GetKeyDown("r")) {
             StartCoroutine(Reload());
         }
-        if (isBroken) return;
-        //if (!Input.GetMouseButton(0)) return; //좌클릭 안하면 제외
-        if (curMag <= 0) return; //남은 총알 0발이면 제외
+        if (isBroken) {
+            return;
+        }
+        if (curMag <= 0) {
+            return; //남은 총알 0발이면 제외
+        }
         if (Input.GetMouseButton(0) && Time.time >= curShotDelay) { //1발 나가는 최소 시간보다 전에 쐈던 시간이 짧으면 제외
             curShotDelay = Time.time + 1f / fireRate;
             fire();

@@ -41,13 +41,19 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Update() {
-        if (isDied) return;
-        if (curHealth <= 0) Die();
+        if (isDied) {
+            return;
+        }
+        if (curHealth <= 0) {
+            Die();
+        }
         Movement();
     }
 
     void FixedUpdate() {
-        if (isDied) return;
+        if (isDied) {
+            return;
+        }
         LookingAtTheMouse();
         rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
