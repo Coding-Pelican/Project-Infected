@@ -29,6 +29,8 @@ public class EnemyController : MonoBehaviour {
     IEnumerator detectPlayerByDistanceCoroutine;
     IEnumerator checkAttackCoroutine;
 
+    //Vector2 testVector2;
+
     private void Awake() {
         player = GameObject.Find("Player");
         rb = GetComponent<Rigidbody2D>();
@@ -53,6 +55,7 @@ public class EnemyController : MonoBehaviour {
             FollowPlayer();
         } else if (isWandering){
             Wander();
+            //TestWonder();
         } else {
             if (!isIdle) {
                 StartCoroutine(Idle());
@@ -94,7 +97,7 @@ public class EnemyController : MonoBehaviour {
     private IEnumerator Idle() {
         isIdle = true;
         Debug.Log("Enemy State is idle");
-        float time = Random.Range(1f, 5f);
+        float time = Random.Range(3f, 15f);
         yield return new WaitForSeconds(time);
         if (isFollowing) {
             isIdle = false;
@@ -111,7 +114,26 @@ public class EnemyController : MonoBehaviour {
         targetAngle = Random.Range(0, 360);
         deltaTimeToTarget = Random.Range(1f, 3f);
         wanderTime = deltaTimeToTarget;
+        //testVector2 = transform.position;
     }
+
+    //private void TestWonder() {
+    //    if (isFollowing) {
+    //        isWandering = false;
+    //        return;
+    //    }
+    //    Debug.Log("Enemy State is Wandering");
+    //    float speed = movementSpeed * deltaTimeToTarget;
+    //    testVector2.x = speed * Mathf.Cos(targetAngle);
+    //    testVector2.y = speed * Mathf.Sin(targetAngle);
+    //    transform.eulerAngles = new Vector3(0, 0, targetAngle);
+    //    transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x + testVector2.x, transform.position.y + testVector2.y), movementSpeed * Time.deltaTime);
+    //    wanderTime -= Time.deltaTime;
+    //    if (wanderTime <= 0) {
+    //        isWandering = false;
+    //        return;
+    //    }
+    //}
 
     private void Wander() {
         if (isFollowing) {
@@ -120,7 +142,7 @@ public class EnemyController : MonoBehaviour {
         }
         Debug.Log("Enemy State is Wandering");
         transform.eulerAngles = new Vector3(0, 0, targetAngle);
-        transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
+        transform.Translate(Vector3.up.normalized * (movementSpeed * 0.5f) * Time.deltaTime);
         wanderTime -= Time.deltaTime;
         if (wanderTime <= 0) {
             isWandering = false;
