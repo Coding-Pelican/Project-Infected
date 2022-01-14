@@ -61,6 +61,14 @@ public class EnemyController : MonoBehaviour {
                 StartCoroutine(Idle());
             }
         }
+
+        //RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, transform.up, detectionDistance);
+        //if (hitInfo.collider != null) {
+        //    Debug.DrawLine(transform.position, hitInfo.point, Color.red);
+        //} else {
+        //    Debug.DrawLine(transform.position, transform.position + transform.up * detectionDistance, Color.green);
+
+        //}
     }
 
     private void OnCollisionStay2D(Collision2D collision) {
