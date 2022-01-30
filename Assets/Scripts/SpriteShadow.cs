@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpriteShadow : MonoBehaviour {
+public class SpriteShadow : MonoBehaviour
+{
     public Vector2 offset = new Vector2(-0.2f, -0.2f);
 
     SpriteRenderer sprRndCaster;
@@ -14,7 +15,8 @@ public class SpriteShadow : MonoBehaviour {
     public Material shadowMaterial;
     public Color shadowColor;
 
-    private void Start() {
+    private void Start()
+    {
         transCaster = transform;
         transShadow = new GameObject().transform;
         transShadow.parent = transCaster;
@@ -34,7 +36,8 @@ public class SpriteShadow : MonoBehaviour {
         sprRndShadow.color = alpha;
     }
 
-    private void LateUpdate() {
+    private void LateUpdate()
+    {
         transShadow.position = new Vector2(transCaster.position.x + offset.x, transCaster.position.y + offset.y);
 
         sprRndShadow.sprite = sprRndCaster.sprite;
