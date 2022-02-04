@@ -105,7 +105,7 @@ Rigidbody2D:
   m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -133,7 +133,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.16666667, y: 0.29166666}
+  m_Size: {x: 0.02, y: 0.12}
   m_EdgeRadius: 0
 --- !u!96 &-4678238256648792072
 TrailRenderer:
@@ -186,7 +186,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.093903884
+        value: 0.075
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -257,4 +257,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 40
   glidingTime: 10
-  bspeed: 40
+  bspeed: 10

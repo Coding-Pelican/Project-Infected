@@ -5,7 +5,6 @@ using UnityEngine;
 public class BulletController : MonoBehaviour {
     [SerializeField] int damage;
     [SerializeField] float glidingTime;
-    [SerializeField] float bspeed;
 
     private PlayerShot playerShot;
 
