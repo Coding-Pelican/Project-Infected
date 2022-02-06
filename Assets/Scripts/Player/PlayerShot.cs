@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerShot : MonoBehaviour {
     public Transform bpoint; //총알 나가는곳
-    public GameObject bulletA; 
+    public GameObject bulletA;
+    public CameraAimController cam;
+
     [Range(0, 10)]
     public float fireRate; 
     private float curShotDelay = 0f; 
@@ -23,6 +25,10 @@ public class PlayerShot : MonoBehaviour {
     public float bspeed = 50f;
     [Range(0, 50)]
     public float glidingTime = 10f;
+
+    private void Awake() {
+        cam = FindObjectOfType<CameraAimController>();
+    }
 
     public void Start() {
         curMag = maxMag;
@@ -56,6 +62,9 @@ public class PlayerShot : MonoBehaviour {
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.AddForce(bpoint.up * bspeed, ForceMode2D.Impulse);
         Debug.Log("curMag = " + curMag);
+
+        cam.Shake((transform.position - bpoint.position).normalized, 1.5f, 0.05f);
+
         int randBreak = Random.Range(1, 101);
         Debug.Log("randBreak = " + randBreak);
 

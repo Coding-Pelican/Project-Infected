@@ -81,6 +81,8 @@ public class EnemyController : MonoBehaviour {
             collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage + randomDamage);
             isReadyToAttack = false;
             //Debug.Log("Entered");
+            StartCoroutine(CheckAttack());
+            Debug.Log("AttackStart");
         }
     }
 
@@ -159,11 +161,9 @@ public class EnemyController : MonoBehaviour {
     }
 
     private IEnumerator CheckAttack() {
-        if (!isReadyToAttack) {
-            isReadyToAttack = true;
-        }
+        Debug.Log("CheckAttackStart");
         yield return new WaitForSeconds(attackDelay);
-        StartCoroutine(checkAttackCoroutine);
+        isReadyToAttack = true;
     }
 
     private IEnumerator DetectPlayerByDistance(float _detectionDistance) {
